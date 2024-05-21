@@ -1,5 +1,7 @@
 package edu.cnm.deepdive;
 
+import java.util.Scanner;
+
 public class TemperatureConverter {
 
   private static final int CELSIUS_FAHRENHEIT_OFFSET = 32;
@@ -10,16 +12,28 @@ public class TemperatureConverter {
 
   public static void main(String[] args) {
     System.out.printf("Starting mode = %s%n", mode);
-    for (String arg : args) {
-      try {
-        mode = Mode.valueOf(arg.toUpperCase());
+
+    // While there is input:
+    //  - Check if input matches one of the modes;
+    //      - if so, change mode
+    //    otherwise, check  if input is a number;
+    //      - if so, perform conversion
+    //    otherwise, halt.
+
+    Scanner scanner = new Scanner(System.in);
+    while (scanner.hasNext()) {
+      if (scanner.hasNext(Mode.PATTERN)) {
+        mode = Mode.valueOf(scanner.next(Mode.PATTERN).toUpperCase());
         System.out.printf("Change mode to %s%n", mode);
-      } catch (IllegalArgumentException e) {
-        double value = Double.parseDouble(arg);
+      } else if (scanner.hasNextDouble()) {
+        double value = scanner.nextDouble();
         double convertedValue = convert(value);
         System.out.printf("Input = %.2f; output = %.2f%n", value, convertedValue);
+      } else {
+        throw new IllegalArgumentException(String.format("Invalid input: %s%n", scanner.next()));
       }
     }
+
   }
 
   private static double convert(double value) {
